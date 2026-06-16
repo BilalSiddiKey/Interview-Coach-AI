@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import numpy as np
 from pypdf import PdfReader
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
@@ -124,9 +125,36 @@ def create_embeddings():
 
 embeddings = create_embeddings()
 
+
+
 st.success(
     f"Generated {len(embeddings)} embeddings"
 )
+
+def retrieve_chunks(question, top_k=3):
+
+    query_embedding = embedding_model.encode(
+        [question]
+    )[0]
+
+    similarities = np.dot(
+        embeddings,
+        query_embedding
+    )
+
+    top_indices = np.argsort(
+        similarities
+    )[-top_k:][::-1]
+
+    retrieved_chunks = []
+
+    for idx in top_indices:
+
+        retrieved_chunks.append(
+            all_chunks[idx]
+        )
+
+    return retrieved_chunks
 
 st.set_page_config(
     page_title="Interview Coach AI",
@@ -154,6 +182,20 @@ question = st.text_input(
 
 if st.button("Ask"):
 
-    st.success(
-        f"You asked: {question}"
+    chunks = retrieve_chunks(
+        question
     )
+
+    st.write("### Retrieved Chunks")
+
+    for chunk in chunks:
+
+        st.write(
+            f"Source: {chunk['source']}"
+        )
+
+        st.write(
+            chunk["content"][:300]
+        )
+
+        st.divider()
