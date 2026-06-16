@@ -3,7 +3,6 @@ import os
 from pypdf import PdfReader
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-import chromadb
 
 st.set_page_config(
     page_title="Interview Coach AI",
