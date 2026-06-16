@@ -22,3 +22,14 @@ Ask interview questions across:
 - Cyber Security
 - Cloud & DevOps
 """)
+
+
+question = st.text_input(
+    "Enter your interview question:"
+)
+
+if st.button("Ask"):
+
+    st.success(
+        f"You asked: {question}"
+    )
