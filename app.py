@@ -156,6 +156,25 @@ def retrieve_chunks(question, top_k=3):
 
     return retrieved_chunks
 
+def generate_answer(prompt):
+
+    inputs = tokenizer(
+        prompt,
+        return_tensors="pt",
+        truncation=True,
+        max_length=1024
+    )
+
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=200
+    )
+
+    return tokenizer.decode(
+        outputs[0],
+        skip_special_tokens=True
+    )
+
 st.set_page_config(
     page_title="Interview Coach AI",
     page_icon="🎯",
@@ -186,16 +205,41 @@ if st.button("Ask"):
         question
     )
 
-    st.write("### Retrieved Chunks")
+    context = "\n".join(
+        [
+            chunk["content"]
+            for chunk in chunks
+        ]
+    )
+
+    prompt = f"""
+You are Interview Coach AI.
+
+Use the context below to answer the question.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+"""
+
+    answer = generate_answer(
+        prompt
+    )
+
+    st.write("## Answer")
+
+    st.write(answer)
+
+    st.write("## Sources")
 
     for chunk in chunks:
 
         st.write(
-            f"Source: {chunk['source']}"
-        )
-
-        st.write(
-            chunk["content"][:300]
+            chunk["source"]
         )
 
         st.divider()
