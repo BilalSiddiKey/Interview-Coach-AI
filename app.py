@@ -106,6 +106,28 @@ st.info(
     f"Created {len(all_chunks)} chunks"
 )
 
+@st.cache_resource
+def create_embeddings():
+
+    texts = [
+        chunk["content"]
+        for chunk in all_chunks
+    ]
+
+    embeddings = embedding_model.encode(
+        texts,
+        show_progress_bar=False
+    )
+
+    return embeddings
+
+
+embeddings = create_embeddings()
+
+st.success(
+    f"Generated {len(embeddings)} embeddings"
+)
+
 st.set_page_config(
     page_title="Interview Coach AI",
     page_icon="🎯",
