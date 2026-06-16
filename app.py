@@ -67,6 +67,45 @@ st.success(
     f"Knowledge Base Loaded: {len(documents)} PDFs"
 )
 
+def chunk_text(text, chunk_size=500):
+
+    chunks = []
+
+    for i in range(0, len(text), chunk_size):
+
+        chunks.append(
+            text[i:i + chunk_size]
+        )
+
+    return chunks
+
+@st.cache_resource
+def create_chunks():
+
+    all_chunks = []
+
+    for doc in documents:
+
+        chunks = chunk_text(
+            doc["content"]
+        )
+
+        for chunk in chunks:
+
+            all_chunks.append({
+                "source": doc["source"],
+                "content": chunk
+            })
+
+    return all_chunks
+
+
+all_chunks = create_chunks()
+
+st.info(
+    f"Created {len(all_chunks)} chunks"
+)
+
 st.set_page_config(
     page_title="Interview Coach AI",
     page_icon="🎯",
